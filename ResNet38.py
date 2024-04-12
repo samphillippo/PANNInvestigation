@@ -1,7 +1,38 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
+
+
+class ConvBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+
+        super(ConvBlock, self).__init__()
+
+        self.conv1 = nn.Conv2d(in_channels=in_channels,
+                            out_channels=out_channels,
+                            kernel_size=(3, 3), stride=(1, 1),
+                            padding=(1, 1), bias=False)
+
+        self.conv2 = nn.Conv2d(in_channels=out_channels,
+                            out_channels=out_channels,
+                            kernel_size=(3, 3), stride=(1, 1),
+                            padding=(1, 1), bias=False)
+
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        #NOTE: we don't need to init, always loading from pretrain
+
+    def forward(self, input, pool_size=(2, 2)):
+
+        x = input
+        x = F.relu_(self.bn1(self.conv1(x)))
+        x = F.relu_(self.bn2(self.conv2(x)))
+        x = F.avg_pool2d(x, kernel_size=pool_size)
+
+        return x
+
 
 class ResNet38(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
@@ -29,9 +60,6 @@ class ResNet38(nn.Module):
         # Spec augmenter
         self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
             freq_drop_width=8, freq_stripes_num=2)
-
-
-        #NEED ACTUAL NETWORK STRUCTURE NOW
 
 
 
