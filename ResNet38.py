@@ -34,8 +34,59 @@ class ConvBlock(nn.Module):
         return x
 
 
+class _ResnetBasicBlock(nn.Module):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, norm_layer=None):
+        super(_ResnetBasicBlock, self).__init__()
+        # Both self.conv1 and self.downsample layers downsample the input when stride != 1
+
+        self.stride = stride
+
+        self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=3, stride=1,
+                     padding=1, groups=1, bias=False, dilation=1)
+        self.bn1 = norm_layer(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=1,
+                     padding=1, groups=1, bias=False, dilation=1)
+        self.bn2 = norm_layer(planes)
+        self.downsample = downsample
+        self.stride = stride
+
+        #self.init_weights()
+
+    # def init_weights(self):
+    #     init_layer(self.conv1)
+    #     init_bn(self.bn1)
+    #     init_layer(self.conv2)
+    #     init_bn(self.bn2)
+    #     nn.init.constant_(self.bn2.weight, 0)
+
+    def forward(self, x):
+        identity = x
+
+        if self.stride == 2:
+            out = F.avg_pool2d(x, kernel_size=(2, 2))
+        else:
+            out = x
+
+        out = self.conv1(out)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = F.dropout(out, p=0.1, training=self.training)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            identity = self.downsample(identity)
+
+        out += identity
+        out = self.relu(out)
+
+        return out
+
+
 class _ResNet(nn.Module):
-    def __init__(self, block, layers, groups=1, width_per_group=64, norm_layer=None):
+    def __init__(self, layers, groups=1, width_per_group=64, norm_layer=None):
         super(_ResNet, self).__init__()
 
         if norm_layer is None:
@@ -48,40 +99,37 @@ class _ResNet(nn.Module):
         self.groups = groups
         self.base_width = width_per_group
 
-        self.layer1 = self._make_layer(block, 64, layers[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        self.layer1 = self._make_layer(64, layers[0], stride=1)
+        self.layer2 = self._make_layer(128, layers[1], stride=2)
+        self.layer3 = self._make_layer(256, layers[2], stride=2)
+        self.layer4 = self._make_layer(512, layers[3], stride=2)
 
     #this should be resnetbasicblock
-    def _make_layer(self, block, planes, blocks, stride=1):
+    def _make_layer(self, planes, blocks, stride=1):
         norm_layer = self._norm_layer
         downsample = None
-        if stride != 1 or self.inplanes != planes * block.expansion:
+        if stride != 1 or self.inplanes != planes:
             if stride == 1:
                 downsample = nn.Sequential(
-                    nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=1, bias=False),
-                    norm_layer(planes * block.expansion),
+                    nn.Conv2d(self.inplanes, planes, kernel_size=1, stride=1, bias=False),
+                    norm_layer(planes),
                 )
                 # init_layer(downsample[0])
                 # init_bn(downsample[1])
             elif stride == 2:
                 downsample = nn.Sequential(
                     nn.AvgPool2d(kernel_size=2),
-                    nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=1, bias=False),
-                    norm_layer(planes * block.expansion),
+                    nn.Conv2d(self.inplanes, planes, kernel_size=1, stride=1, bias=False),
+                    norm_layer(planes),
                 )
                 # init_layer(downsample[1])
                 # init_bn(downsample[2])
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, 1, norm_layer))
-        self.inplanes = planes * block.expansion
+        layers.append(_ResnetBasicBlock(self.inplanes, planes, stride, downsample, norm_layer))
+        self.inplanes = planes
         for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, groups=self.groups,
-                                base_width=self.base_width, dilation=1,
-                                norm_layer=norm_layer))
+            layers.append(_ResnetBasicBlock(self.inplanes, planes, norm_layer=norm_layer))
 
         return nn.Sequential(*layers)
 
@@ -121,7 +169,7 @@ class ResNet38(nn.Module):
             freq_drop_width=8, freq_stripes_num=2)
 
 
-        #self.resnet = _ResNet(block=_ResnetBasicBlock, layers=[3, 4, 6, 3])
+        self.resnet = _ResNet(layers=[3, 4, 6, 3])
 
 
 
