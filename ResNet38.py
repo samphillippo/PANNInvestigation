@@ -223,21 +223,35 @@ class ResNet38(nn.Module):
 
 
 
-#TODO: add final layer for transfer task
+#NOTE: we don't want to do any freezing...
 class ResNet38_Transfer(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
-        fmax, classes_num, freeze_base):
+        fmax, classes_num):
         """Classifier for a new task using pretrained Cnn14 as a sub module.
         """
-        super(ResNet38, self).__init__()
+        super(ResNet38_Transfer, self).__init__()
 
         audioset_classes_num = 527
 
         self.base = ResNet38(sample_rate, window_size, hop_size, mel_bins, fmin,
             fmax, audioset_classes_num)
 
+        # Transfer layer
+        self.fc_transfer = nn.Linear(2048, classes_num, bias=True)
+
         # transfer lyaer:
         #self.fc_transfer = nn.Linear(2048, classes_num, bias=True)
+    def load_from_pretrain(self, pretrained_checkpoint_path):
+        checkpoint = torch.load(pretrained_checkpoint_path)
+        self.base.load_state_dict(checkpoint['model'])
 
-    #need load from pretrain also!!!
-    #this should match exactly structure!!!
+    def forward(self, input, mixup_lambda=None):
+        """Input: (batch_size, data_length)
+        """
+        output_dict = self.base(input, mixup_lambda)
+        embedding = output_dict['embedding']
+
+        clipwise_output =  torch.log_softmax(self.fc_transfer(embedding), dim=-1)
+        output_dict['clipwise_output'] = clipwise_output
+
+        return output_dict

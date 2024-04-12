@@ -1,1 +1,3 @@
 __pycache__
+*.pth
+training_data/*
