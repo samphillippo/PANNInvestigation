@@ -242,7 +242,7 @@ class ResNet38_Transfer(nn.Module):
         # transfer lyaer:
         #self.fc_transfer = nn.Linear(2048, classes_num, bias=True)
     def load_from_pretrain(self, pretrained_checkpoint_path):
-        checkpoint = torch.load(pretrained_checkpoint_path)
+        checkpoint = torch.load(pretrained_checkpoint_path, map_location=('cuda' if torch.cuda.is_available() else 'cpu'))
         self.base.load_state_dict(checkpoint['model'])
 
     def forward(self, input, mixup_lambda=None):

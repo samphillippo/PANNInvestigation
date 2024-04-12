@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import librosa
 import numpy as np
+import torch
 
 from FeatureExtractor import get_features_from_wav, get_label_vector
 from ResNet38 import ResNet38_Transfer
@@ -25,20 +26,19 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    modelPath = sys.argv[2]
     model = ResNet38_Transfer(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num)
+    model.load_from_pretrain(sys.argv[2])
+
+    datasetPath = sys.argv[1]
+    data = []
+    for genre_folder in os.listdir(datasetPath):
+        genre_path = os.path.join(datasetPath, genre_folder)
+        if os.path.isdir(genre_path):
+            for filename in os.listdir(genre_path):
+                if filename.endswith(".wav"):
+                    file_path = os.path.join(genre_path, filename)
+                    data.append({"audio": get_features_from_wav(file_path, sample_rate, max_len), "genre": get_label_vector(genre_folder, genre_to_index_map)})
 
 
-    # datasetPath = sys.argv[1]
-    # data = []
-    # for genre_folder in os.listdir(datasetPath):
-    #     genre_path = os.path.join(datasetPath, genre_folder)
-    #     if os.path.isdir(genre_path):
-    #         for filename in os.listdir(genre_path):
-    #             if filename.endswith(".wav"):
-    #                 file_path = os.path.join(genre_path, filename)
-    #                 data.append({"audio": get_features_from_wav(file_path, sample_rate, max_len), "genre": get_label_vector(genre_folder, genre_to_index_map)})
-
-
-    # data = pd.DataFrame(data)
-    # print(data.head())
+    data = pd.DataFrame(data)
+    print(data.head())
