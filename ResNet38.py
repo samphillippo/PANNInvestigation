@@ -34,6 +34,65 @@ class ConvBlock(nn.Module):
         return x
 
 
+class _ResNet(nn.Module):
+    def __init__(self, block, layers, groups=1, width_per_group=64, norm_layer=None):
+        super(_ResNet, self).__init__()
+
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        self._norm_layer = norm_layer
+
+        self.inplanes = 64
+        self.dilation = 1
+
+        self.groups = groups
+        self.base_width = width_per_group
+
+        self.layer1 = self._make_layer(block, 64, layers[0], stride=1)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+
+    #this should be resnetbasicblock
+    def _make_layer(self, block, planes, blocks, stride=1):
+        norm_layer = self._norm_layer
+        downsample = None
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            if stride == 1:
+                downsample = nn.Sequential(
+                    _resnet_conv1x1(self.inplanes, planes * block.expansion),
+                    norm_layer(planes * block.expansion),
+                )
+                init_layer(downsample[0])
+                init_bn(downsample[1])
+            elif stride == 2:
+                downsample = nn.Sequential(
+                    nn.AvgPool2d(kernel_size=2),
+                    _resnet_conv1x1(self.inplanes, planes * block.expansion),
+                    norm_layer(planes * block.expansion),
+                )
+                init_layer(downsample[1])
+                init_bn(downsample[2])
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
+                            self.base_width, 1, norm_layer))
+        self.inplanes = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.inplanes, planes, groups=self.groups,
+                                base_width=self.base_width, dilation=1,
+                                norm_layer=norm_layer))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        return x
+
 class ResNet38(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
         fmax, classes_num):
@@ -60,6 +119,9 @@ class ResNet38(nn.Module):
         # Spec augmenter
         self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
             freq_drop_width=8, freq_stripes_num=2)
+
+
+        #self.resnet = _ResNet(block=_ResnetBasicBlock, layers=[3, 4, 6, 3])
 
 
 
