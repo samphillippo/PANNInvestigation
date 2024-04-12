@@ -60,19 +60,19 @@ class _ResNet(nn.Module):
         if stride != 1 or self.inplanes != planes * block.expansion:
             if stride == 1:
                 downsample = nn.Sequential(
-                    _resnet_conv1x1(self.inplanes, planes * block.expansion),
+                    nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=1, bias=False),
                     norm_layer(planes * block.expansion),
                 )
-                init_layer(downsample[0])
-                init_bn(downsample[1])
+                # init_layer(downsample[0])
+                # init_bn(downsample[1])
             elif stride == 2:
                 downsample = nn.Sequential(
                     nn.AvgPool2d(kernel_size=2),
-                    _resnet_conv1x1(self.inplanes, planes * block.expansion),
+                    nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=1, bias=False),
                     norm_layer(planes * block.expansion),
                 )
-                init_layer(downsample[1])
-                init_bn(downsample[2])
+                # init_layer(downsample[1])
+                # init_bn(downsample[2])
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
