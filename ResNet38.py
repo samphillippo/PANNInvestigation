@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from torchlibrosa.stft import Spectrogram, LogmelFilterBank
+from torchlibrosa.augmentation import SpecAugmentation
 
 class ResNet38(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
@@ -7,11 +9,29 @@ class ResNet38(nn.Module):
 
         super(ResNet38, self).__init__()
 
-        #need spectrogram extractor
-        #need logmel extractor
-        # need "spec augmenter"
+        window = 'hann'
+        center = True
+        pad_mode = 'reflect'
+        ref = 1.0
+        amin = 1e-10
+        top_db = None
 
-        #THEN we add actual network structure
+        # Spectrogram extractor
+        self.spectrogram_extractor = Spectrogram(n_fft=window_size, hop_length=hop_size,
+            win_length=window_size, window=window, center=center, pad_mode=pad_mode,
+            freeze_parameters=True)
+
+        # Logmel feature extractor
+        self.logmel_extractor = LogmelFilterBank(sr=sample_rate, n_fft=window_size,
+            n_mels=mel_bins, fmin=fmin, fmax=fmax, ref=ref, amin=amin, top_db=top_db,
+            freeze_parameters=True)
+
+        # Spec augmenter
+        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
+            freq_drop_width=8, freq_stripes_num=2)
+
+
+        #NEED ACTUAL NETWORK STRUCTURE NOW
 
 
 
