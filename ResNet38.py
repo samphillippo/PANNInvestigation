@@ -168,8 +168,58 @@ class ResNet38(nn.Module):
         self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
             freq_drop_width=8, freq_stripes_num=2)
 
-
+        self.bn0 = nn.BatchNorm2d(64)
+        self.conv_block1 = ConvBlock(in_channels=1, out_channels=64)
         self.resnet = _ResNet(layers=[3, 4, 6, 3])
+        self.conv_block_after1 = ConvBlock(in_channels=512, out_channels=2048)
+        self.fc1 = nn.Linear(2048, 2048)
+        self.fc_audioset = nn.Linear(2048, classes_num, bias=True)
+
+    "Runs mixup on the input x with mixup_lambda."
+    def do_mixup(self, x, mixup_lambda):
+        out = (x[0 :: 2].transpose(0, -1) * mixup_lambda[0 :: 2] + \
+            x[1 :: 2].transpose(0, -1) * mixup_lambda[1 :: 2]).transpose(0, -1)
+        return out
+
+    def forward(self, input, mixup_lambda=None):
+        """
+        Input: (batch_size, data_length)"""
+
+        x = self.spectrogram_extractor(input)   # (batch_size, 1, time_steps, freq_bins)
+        x = self.logmel_extractor(x)    # (batch_size, 1, time_steps, mel_bins)
+
+        x = x.transpose(1, 3)
+        x = self.bn0(x)
+        x = x.transpose(1, 3)
+
+        if self.training:
+            x = self.spec_augmenter(x)
+
+        #TODO: implement mixup
+        # Mixup on spectrogram
+        if self.training and mixup_lambda is not None:
+            x = self.do_mixup(x, mixup_lambda)
+
+        x = self.conv_block1(x, pool_size=(2, 2), pool_type='avg')
+        x = F.dropout(x, p=0.2, training=self.training, inplace=True)
+        x = self.resnet(x)
+        x = F.avg_pool2d(x, kernel_size=(2, 2))
+        x = F.dropout(x, p=0.2, training=self.training, inplace=True)
+        x = self.conv_block_after1(x, pool_size=(1, 1), pool_type='avg')
+        x = F.dropout(x, p=0.2, training=self.training, inplace=True)
+        x = torch.mean(x, dim=3)
+
+        (x1, _) = torch.max(x, dim=2)
+        x2 = torch.mean(x, dim=2)
+        x = x1 + x2
+        x = F.dropout(x, p=0.5, training=self.training)
+        x = F.relu_(self.fc1(x))
+        embedding = F.dropout(x, p=0.5, training=self.training)
+        clipwise_output = torch.sigmoid(self.fc_audioset(x))
+
+        output_dict = {'clipwise_output': clipwise_output, 'embedding': embedding}
+
+        return output_dict
 
 
 
