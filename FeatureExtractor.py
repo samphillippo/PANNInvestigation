@@ -16,11 +16,12 @@ def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     if np.max(np.abs(audio)) > 1.:
         audio /= np.max(np.abs(audio))
     audio = (audio * 32767.).astype(np.int16)
-    #TODO: investigate
     audio_tensor = torch.LongTensor(audio)
     return audio_tensor
 
+
+#MAKE TENSOR
 def get_label_vector(genre_label, genre_to_index_map):
     label_vector = np.zeros(len(genre_to_index_map))
     label_vector[genre_to_index_map[genre_label]] = 1
-    return label_vector
+    return torch.Tensor(label_vector)

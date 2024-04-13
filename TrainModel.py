@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from time import time
 
 #Mixup class, implements mixup augmentation by generating random coefficients of size batch_size
 class Mixup(object):
@@ -64,6 +65,44 @@ def train(model, dataset):
         eps=1e-08, weight_decay=0., amsgrad=True)
 
     mixup_augmenter = Mixup(mixup_alpha=1.)
+
+
+    # Train on mini batches
+    iteration = 0
+    train_bgn_time = time()
+    for batch_data_dict in train_loader:
+        #print validation accuracy every 200 iterations
+        if iteration % 200 == 0 and iteration > 0:
+            print('------------------------------------')
+            print('Iteration: {}'.format(iteration))
+
+            train_fin_time = time()
+
+            statistics = evaluate(validate_loader)
+            print('Validate accuracy: {:.3f}'.format(statistics['accuracy']))
+
+            # statistics_container.append(iteration, statistics, 'validate')
+            # statistics_container.dump()
+
+            train_time = train_fin_time - train_bgn_time
+            validate_time = time() - train_fin_time
+
+            print(
+                'Train time: {:.3f} s, validate time: {:.3f} s'
+                ''.format(train_time, validate_time))
+
+            train_bgn_time = time()
+
+
+        batch_data_dict['mixup_lambda'] = mixup_augmenter.get_lambda(len(batch_data_dict['waveform']))
+
+        # Move data to GPU
+        for key in batch_data_dict.keys():
+            batch_data_dict[key] = batch_data_dict[key].to(device)
+
+        # Train
+        model.train()
+
 
 
 ###########EVALUATION################
