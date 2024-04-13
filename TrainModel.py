@@ -66,18 +66,49 @@ def train(model, dataset):
     mixup_augmenter = Mixup(mixup_alpha=1.)
 
 
-# def evaluate(model, data_loader):
-#     output_dict = forward(
-#         model=self.model,
-#         generator=data_loader,
-#         return_target=True)
+###########EVALUATION################
 
-#     clipwise_output = output_dict['clipwise_output']    # (audios_num, classes_num)
-#     target = output_dict['target']    # (audios_num, classes_num)
+def append_to_dict(dict, key, value):
+    if key not in dict:
+        dict[key] = []
+    dict[key].append(value)
 
-#     cm = metrics.confusion_matrix(np.argmax(target, axis=-1), np.argmax(clipwise_output, axis=-1), labels=None)
-#     accuracy = calculate_accuracy(target, clipwise_output)
+def evaluate(model, data_loader):
+    output_dict = {}
 
-#     statistics = {'accuracy': accuracy}
+    # Forward data to a model in mini-batches
+    for n, batch_data_dict in enumerate(data_loader):
+        # print(n)
+        batch_waveform = batch_data_dict['waveform'].to(device)
 
-#     return statistics
+        with torch.no_grad():
+            model.eval()
+            batch_output = model(batch_waveform)
+
+        append_to_dict(output_dict, 'filename', batch_data_dict['filename'])
+
+        append_to_dict(output_dict, 'clipwise_output',
+            batch_output['clipwise_output'].data.cpu().numpy())
+
+        # if return_input:
+        #     append_to_dict(output_dict, 'waveform', batch_data_dict['waveform'])
+
+        if 'target' in batch_data_dict.keys():
+            append_to_dict(output_dict, 'target', batch_data_dict['target'])
+
+    for key in output_dict.keys():
+        output_dict[key] = np.concatenate(output_dict[key], axis=0)
+
+
+    clipwise_output = output_dict['clipwise_output']    # (audios_num, classes_num)
+    target = output_dict['target']    # (audios_num, classes_num)
+
+    #cm = metrics.confusion_matrix(np.argmax(target, axis=-1), np.argmax(clipwise_output, axis=-1), labels=None)
+
+    #Calculate accuracy
+    N = target.shape[0]
+    accuracy = np.sum(np.argmax(target, axis=-1) == np.argmax(clipwise_output, axis=-1)) / N
+
+    statistics = {'accuracy': accuracy}
+
+    return statistics

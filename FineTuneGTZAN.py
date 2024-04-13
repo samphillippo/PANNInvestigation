@@ -40,7 +40,7 @@ if __name__ == "__main__":
             for filename in os.listdir(genre_path):
                 if filename.endswith(".wav"):
                     file_path = os.path.join(genre_path, filename)
-                    data.append({"audio": get_features_from_wav(file_path, sample_rate, max_len), "genre": get_label_vector(genre_folder, genre_to_index_map), "fold": count % 10})
+                    data.append({"filename": filename, "waveform": get_features_from_wav(file_path, sample_rate, max_len), "target": get_label_vector(genre_folder, genre_to_index_map), "fold": count % 10})
                     count += 1
 
     dataset = GTZANDataset(data)

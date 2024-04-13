@@ -1,5 +1,6 @@
 import librosa
 import numpy as np
+import torch
 
 def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     audio, fs = librosa.core.load(file_path, sr=sample_rate, mono=True)
@@ -14,7 +15,10 @@ def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     # Convert audio to 16 bit integer
     if np.max(np.abs(audio)) > 1.:
         audio /= np.max(np.abs(audio))
-    return (audio * 32767.).astype(np.int16)
+    audio = (audio * 32767.).astype(np.int16)
+    #TODO: investigate
+    audio_tensor = torch.LongTensor(audio)
+    return audio_tensor
 
 def get_label_vector(genre_label, genre_to_index_map):
     label_vector = np.zeros(len(genre_to_index_map))
