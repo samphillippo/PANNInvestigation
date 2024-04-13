@@ -17,6 +17,8 @@ def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     if np.max(np.abs(audio)) > 1.:
         audio /= np.max(np.abs(audio))
 
+    return torch.Tensor(audio)
+
 # Gets a one-hot encoded label vector for the genre
 def get_label_vector(genre_label, genre_to_index_map):
     label_vector = np.zeros(len(genre_to_index_map), dtype=np.float32)

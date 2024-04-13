@@ -28,16 +28,11 @@ stop_iteration = 10000
 holdout_fold = 1
 batch_size = 32
 
-#TODO: remove this?
+#Moves data to device, if it is a float tensor (ignores string numpy arrays)
 def move_data_to_device(x):
     if 'float' in str(x.dtype):
-        x = torch.Tensor(x)
-    elif 'int' in str(x.dtype):
-        x = torch.LongTensor(x)
-    else:
-        return x
-
-    return x.to(device)
+        x = torch.Tensor(x).to(device)
+    return x
 
 
 #Trains the model on the dataset
@@ -112,18 +107,16 @@ def train(model, dataset):
         # Train
         model.train()
 
-        #MIXUP
+        #RUNS MODEL WITH MIXUP
         batch_output_dict = model(batch_data_dict['waveform'],
             batch_data_dict['mixup_lambda'])
-        """{'clipwise_output': (batch_size, classes_num), ...}"""
 
         mixed_target = (batch_data_dict['target'][0 :: 2].transpose(0, -1) * batch_data_dict['mixup_lambda'][0 :: 2] + \
             batch_data_dict['target'][1 :: 2].transpose(0, -1) * batch_data_dict['mixup_lambda'][1 :: 2]).transpose(0, -1)
         batch_target_dict = {'target': mixed_target}
-        """{'target': (batch_size, classes_num)}"""
 
         loss = - torch.mean(batch_target_dict['target'] * batch_output_dict['clipwise_output'])
-        print(iteration, loss)
+        print("iteration: {}, loss: {}".format(iteration, loss))
 
         # Backward
         optimizer.zero_grad()
