@@ -103,7 +103,7 @@ def train(model, dataset, workspace, task):
             train_bgn_time = time()
 
 
-        if iteration % 1 == 0:# and iteration > 0:
+        if iteration % 2000 == 0 and iteration > 0:
             checkpoint = {
                 'iteration': iteration,
                 'model': model.module.state_dict() if device == 'cuda' else model.state_dict(),}
