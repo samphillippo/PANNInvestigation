@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from time import time
+from DataSet import TrainSampler, EvaluateSampler, collate_fn
 
 #Mixup class, implements mixup augmentation by generating random coefficients of size batch_size
 class Mixup(object):
@@ -23,6 +24,8 @@ num_workers = 8 #follows format from given code. Change?
 device = 'cuda' if (torch.cuda.is_available()) else 'cpu'
 learning_rate=1e-4
 stop_iteration = 10000
+holdout_fold = 1
+batch_size = 32
 
 def train(model, dataset):
     if device == 'cuda':
@@ -32,10 +35,15 @@ def train(model, dataset):
 
 
     ############################BATCHING######################################
-    #TODO use sampler??
+    train_sampler = TrainSampler(
+        data=dataset.data,
+        holdout_fold=holdout_fold,
+        batch_size=batch_size * 2) #for mixup
 
-    #sampler is supposed to get batch_size individual samples,
-    #TODO: how
+    validate_sampler = EvaluateSampler(
+        hdf5_path=dataset.data,
+        holdout_fold=holdout_fold,
+        batch_size=batch_size)
 
     train_loader = torch.utils.data.DataLoader(dataset=dataset,
         batch_sampler=train_sampler, collate_fn=collate_fn,
