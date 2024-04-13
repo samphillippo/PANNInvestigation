@@ -22,6 +22,7 @@ class Mixup(object):
 num_workers = 8 #follows format from given code. Change?
 device = 'cuda' if (torch.cuda.is_available()) else 'cpu'
 learning_rate=1e-4
+stop_iteration = 10000
 
 def train(model, dataset):
     if device == 'cuda':
@@ -67,6 +68,8 @@ def train(model, dataset):
     mixup_augmenter = Mixup(mixup_alpha=1.)
 
 
+    #TODO: IMPORTANT: SAVING
+
     # Train on mini batches
     iteration = 0
     train_bgn_time = time()
@@ -102,6 +105,29 @@ def train(model, dataset):
 
         # Train
         model.train()
+
+        #MIXUP
+        batch_output_dict = model(batch_data_dict['waveform'],
+            batch_data_dict['mixup_lambda'])
+        """{'clipwise_output': (batch_size, classes_num), ...}"""
+
+        mixed_target = (batch_data_dict['target'][0 :: 2].transpose(0, -1) * batch_data_dict['mixup_lambda'][0 :: 2] + \
+            batch_data_dict['target'][1 :: 2].transpose(0, -1) * batch_data_dict['mixup_lambda'][1 :: 2]).transpose(0, -1)
+        batch_target_dict = {'target': mixed_target}
+        """{'target': (batch_size, classes_num)}"""
+
+        loss = - torch.mean(batch_target_dict['target'] * batch_output_dict['clipwise_output'])
+        print(iteration, loss)
+
+        # Backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if iteration == stop_iteration:
+            break
+
+        iteration += 1
 
 
 
