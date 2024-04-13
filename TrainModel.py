@@ -9,6 +9,7 @@ class Mixup(object):
         self.mixup_alpha = mixup_alpha
         self.random_state = np.random.RandomState(random_seed)
 
+    # returns a list of random coefficients of size batch_size
     def get_lambda(self, batch_size):
         mixup_lambdas = []
         for n in range(0, batch_size, 2):
@@ -20,13 +21,14 @@ class Mixup(object):
         return np.array(mixup_lambdas)
 
 
-num_workers = 1 #follows format from given code. Change?
 device = 'cuda' if (torch.cuda.is_available()) else 'cpu'
+num_workers = 8 if (torch.cuda.is_available()) else 1
 learning_rate=1e-4
 stop_iteration = 10000
 holdout_fold = 1
 batch_size = 32
 
+#TODO: remove this?
 def move_data_to_device(x):
     if 'float' in str(x.dtype):
         x = torch.Tensor(x)
@@ -38,6 +40,7 @@ def move_data_to_device(x):
     return x.to(device)
 
 
+#Trains the model on the dataset
 def train(model, dataset):
     if device == 'cuda':
         print('GPU number: {}'.format(torch.cuda.device_count()))
@@ -45,7 +48,7 @@ def train(model, dataset):
         model.to(device)
 
 
-    ############################BATCHING######################################
+    #########################BATCH SAMPLING#################################
     train_sampler = TrainSampler(
         data=dataset.data,
         holdout_fold=holdout_fold,
@@ -63,10 +66,6 @@ def train(model, dataset):
     validate_loader = torch.utils.data.DataLoader(dataset=dataset,
         batch_sampler=validate_sampler, collate_fn=collate_fn,
         num_workers=num_workers, pin_memory=True)
-
-    #ISSUE: do we need to store test data???
-    #They just use validate!!! (i guess this is ok cause we're technically tuning?)
-
     ########################################################################
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, betas=(0.9, 0.999),
@@ -140,11 +139,13 @@ def train(model, dataset):
 
 ###########EVALUATION################
 
+# Helper function to append a value to a dictionary
 def append_to_dict(dict, key, value):
     if key not in dict:
         dict[key] = []
     dict[key].append(value)
 
+#Evaluates the model on the dataset
 def evaluate(model, data_loader):
     output_dict = {}
 

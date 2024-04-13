@@ -2,6 +2,7 @@ import librosa
 import numpy as np
 import torch
 
+# Extracts features from a wav file
 def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     audio, fs = librosa.core.load(file_path, sr=sample_rate, mono=True)
 
@@ -12,17 +13,11 @@ def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
         # Cut audio file if it is more than 30 seconds
         audio = audio[0 : max_len]
 
-    # Convert audio to 16 bit integer
+    #TODO: do we still want to normalize the audio?
     if np.max(np.abs(audio)) > 1.:
         audio /= np.max(np.abs(audio))
 
-    #print(audio.dtype)
-    # audio = (audio * 32767.).astype(np.int16)
-    #audio_tensor = torch.LongTensor(audio)
-    return torch.Tensor(audio)
-
-
-#MAKE TENSOR
+# Gets a one-hot encoded label vector for the genre
 def get_label_vector(genre_label, genre_to_index_map):
     label_vector = np.zeros(len(genre_to_index_map), dtype=np.float32)
     label_vector[genre_to_index_map[genre_label]] = 1

@@ -1,6 +1,6 @@
-from time import time
 import numpy as np
 
+#base class to store data for sampling
 class Base(object):
     def __init__(self, data):
         self.data = data
@@ -12,12 +12,9 @@ class Base(object):
         self.folds = [item["fold"] for item in self.data]
 
         self.audios_num = len(self.data)
-        self.classes_num = self.targets[0].shape[1]  # Assuming targets are tensors
+        self.classes_num = self.targets[0].shape[1]
 
-        # Log information
-
-        print('Training number: {}'.format(self.audios_num))
-
+#samples the data for training
 class TrainSampler(object):
     def __init__(self, data, holdout_fold, batch_size, random_seed=1234):
         self.data = data
@@ -57,17 +54,7 @@ class TrainSampler(object):
 
             yield batch_meta
 
-    def state_dict(self):
-        state = {
-            'indexes': self.indexes,
-            'pointer': self.pointer
-        }
-        return state
-
-    def load_state_dict(self, state):
-        self.indexes = state['indexes']
-        self.pointer = state['pointer']
-
+#samples the data for evaluation
 class EvaluateSampler(object):
     def __init__(self, data, holdout_fold, batch_size, random_seed=1234):
         self.data = data
@@ -96,6 +83,7 @@ class EvaluateSampler(object):
             pointer += batch_size
             yield batch_meta
 
+#combines a list of dictionaries into a single dictionary
 def collate_fn(list_data_dict):
     np_data_dict = {}
 
@@ -105,27 +93,10 @@ def collate_fn(list_data_dict):
     return np_data_dict
 
 
-# class GTZANDataset(object):
-#     def __init__(self, data):
-#         self.data = data
-
-#     def __len__(self):
-#         return len(self.data)
-
-#     def __getitem__(self, idx):
-#         print(idx)
-#         return self.data[idx]
-
-
-#TODO: this is now pointless...
+#dataset structure in order to use dataloader
+#TODO: delete this?
 class GTZANDataset(object):
     def __init__(self, data):
-        """This class takes the meta of an audio clip as input, and return
-        the waveform and target of the audio clip. This class is used by DataLoader.
-        Args:
-          clip_samples: int
-          classes_num: int
-        """
         self.data = data
 
     def __getitem__(self, meta):

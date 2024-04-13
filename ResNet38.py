@@ -5,6 +5,7 @@ from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
 
 
+# Convolutional block
 class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
 
@@ -22,7 +23,6 @@ class ConvBlock(nn.Module):
 
         self.bn1 = nn.BatchNorm2d(out_channels)
         self.bn2 = nn.BatchNorm2d(out_channels)
-        #NOTE: we don't need to init, always loading from pretrain
 
     def forward(self, input, pool_size=(2, 2)):
 
@@ -34,11 +34,10 @@ class ConvBlock(nn.Module):
         return x
 
 
+# ResNet basic block
 class _ResnetBasicBlock(nn.Module):
     def __init__(self, inplanes, planes, stride=1, downsample=None, norm_layer=None):
         super(_ResnetBasicBlock, self).__init__()
-        # Both self.conv1 and self.downsample layers downsample the input when stride != 1
-
         self.stride = stride
 
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=3, stride=1,
@@ -50,15 +49,6 @@ class _ResnetBasicBlock(nn.Module):
         self.bn2 = norm_layer(planes)
         self.downsample = downsample
         self.stride = stride
-
-        #self.init_weights()
-
-    # def init_weights(self):
-    #     init_layer(self.conv1)
-    #     init_bn(self.bn1)
-    #     init_layer(self.conv2)
-    #     init_bn(self.bn2)
-    #     nn.init.constant_(self.bn2.weight, 0)
 
     def forward(self, x):
         identity = x
@@ -85,6 +75,7 @@ class _ResnetBasicBlock(nn.Module):
         return out
 
 
+# Base ResNet model
 class _ResNet(nn.Module):
     def __init__(self, layers, groups=1, width_per_group=64, norm_layer=None):
         super(_ResNet, self).__init__()
@@ -104,7 +95,6 @@ class _ResNet(nn.Module):
         self.layer3 = self._make_layer(256, layers[2], stride=2)
         self.layer4 = self._make_layer(512, layers[3], stride=2)
 
-    #this should be resnetbasicblock
     def _make_layer(self, planes, blocks, stride=1):
         norm_layer = self._norm_layer
         downsample = None
@@ -141,6 +131,7 @@ class _ResNet(nn.Module):
 
         return x
 
+# ResNet38 model
 class ResNet38(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
         fmax, classes_num):
@@ -175,7 +166,7 @@ class ResNet38(nn.Module):
         self.fc1 = nn.Linear(2048, 2048)
         self.fc_audioset = nn.Linear(2048, classes_num, bias=True)
 
-    "Runs mixup on the input x with mixup_lambda."
+    #Runs mixup on the input x with mixup_lambda.
     def do_mixup(self, x, mixup_lambda):
         out = (x[0 :: 2].transpose(0, -1) * mixup_lambda[0 :: 2] + \
             x[1 :: 2].transpose(0, -1) * mixup_lambda[1 :: 2]).transpose(0, -1)
@@ -194,7 +185,6 @@ class ResNet38(nn.Module):
         if self.training:
             x = self.spec_augmenter(x)
 
-        #TODO: implement mixup
         # Mixup on spectrogram
         if self.training and mixup_lambda is not None:
             x = self.do_mixup(x, mixup_lambda)
@@ -220,9 +210,7 @@ class ResNet38(nn.Module):
 
         return output_dict
 
-
-
-#NOTE: we don't want to do any freezing...
+# ResNet38 model for transfer learning
 class ResNet38_Transfer(nn.Module):
     def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
         fmax, classes_num):
@@ -238,8 +226,6 @@ class ResNet38_Transfer(nn.Module):
         # Transfer layer
         self.fc_transfer = nn.Linear(2048, classes_num, bias=True)
 
-        # transfer lyaer:
-        #self.fc_transfer = nn.Linear(2048, classes_num, bias=True)
     def load_from_pretrain(self, pretrained_checkpoint_path):
         checkpoint = torch.load(pretrained_checkpoint_path, map_location=('cuda' if torch.cuda.is_available() else 'cpu'))
         self.base.load_state_dict(checkpoint['model'])

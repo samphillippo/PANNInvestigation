@@ -1,9 +1,5 @@
 import sys
 import os
-import pandas as pd
-import librosa
-import numpy as np
-import torch
 
 from FeatureExtractor import get_features_from_wav, get_label_vector
 from ResNet38 import ResNet38_Transfer
@@ -19,9 +15,9 @@ mel_bins=64
 fmin=50
 fmax=14000
 classes_num = 10
-
 genre_to_index_map = { "blues": 0, "classical": 1, "country": 2, "disco": 3, "hiphop": 4, "jazz": 5, "metal": 6, "pop": 7, "reggae": 8, "rock": 9 }
 
+# Fine-tune the model on the GTZAN dataset
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python FineTuneGTZAN.py <path_to_GTZAN_dataset> <path_to_pretrained_model>")
