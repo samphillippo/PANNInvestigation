@@ -19,16 +19,18 @@ genre_to_index_map = { "blues": 0, "classical": 1, "country": 2, "disco": 3, "hi
 
 # Fine-tune the model on the GTZAN dataset
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python FineTuneGTZAN.py <path_to_GTZAN_dataset> <path_to_pretrained_model>")
+    if len(sys.argv) < 3:
+        print("Usage: python FineTuneGTZAN.py <workspace_path> <GTZAN_dataset_name> <pretrained_model_name>")
         sys.exit(1)
+
+    workspace = sys.argv[1]
 
     print("Loading model...")
     model = ResNet38_Transfer(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num)
-    model.load_from_pretrain(sys.argv[2])
+    model.load_from_pretrain(os.path.join(workspace, sys.argv[3]))
 
     print("Loading dataset...")
-    datasetPath = sys.argv[1]
+    datasetPath = os.path.join(workspace, sys.argv[2])
     data = []
     count = 1
     for genre_folder in os.listdir(datasetPath):
@@ -42,4 +44,4 @@ if __name__ == "__main__":
 
     dataset = GTZANDataset(data)
     print("Fine-tuning model...")
-    train(model, dataset)
+    train(model, dataset, workspace, "GTZAN")

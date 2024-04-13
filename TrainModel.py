@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import os
 from time import time
 from DataSet import TrainSampler, EvaluateSampler, collate_fn
 
@@ -36,7 +37,11 @@ def move_data_to_device(x):
 
 
 #Trains the model on the dataset
-def train(model, dataset):
+def train(model, dataset, workspace, task):
+    checkpoints_dir = os.path.join(workspace, 'checkpoints', task)
+    if not os.path.exists(checkpoints_dir):
+        os.makedirs(checkpoints_dir)
+
     if device == 'cuda':
         print('GPU number: {}'.format(torch.cuda.device_count()))
         model = torch.nn.DataParallel(model)
@@ -82,7 +87,7 @@ def train(model, dataset):
 
             train_fin_time = time()
 
-            statistics = evaluate(validate_loader)
+            statistics = evaluate(model, validate_loader)
             print('Validate accuracy: {:.3f}'.format(statistics['accuracy']))
 
             # statistics_container.append(iteration, statistics, 'validate')
@@ -97,6 +102,17 @@ def train(model, dataset):
 
             train_bgn_time = time()
 
+
+        if iteration % 1 == 0:# and iteration > 0:
+            checkpoint = {
+                'iteration': iteration,
+                'model': model.module.state_dict() if device == 'cuda' else model.state_dict(),}
+
+            checkpoint_path = os.path.join(
+                checkpoints_dir, '{}_iterations.pth'.format(iteration))
+
+            torch.save(checkpoint, checkpoint_path)
+            print('Model saved to {}'.format(checkpoint_path))
 
         batch_data_dict['mixup_lambda'] = mixup_augmenter.get_lambda(len(batch_data_dict['waveform']))
 
