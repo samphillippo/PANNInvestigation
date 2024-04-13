@@ -105,12 +105,28 @@ def collate_fn(list_data_dict):
     return np_data_dict
 
 
+# class GTZANDataset(object):
+#     def __init__(self, data):
+#         self.data = data
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, idx):
+#         print(idx)
+#         return self.data[idx]
+
+
+#TODO: this is now pointless...
 class GTZANDataset(object):
     def __init__(self, data):
+        """This class takes the meta of an audio clip as input, and return
+        the waveform and target of the audio clip. This class is used by DataLoader.
+        Args:
+          clip_samples: int
+          classes_num: int
+        """
         self.data = data
 
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        return self.data[idx]
+    def __getitem__(self, meta):
+        return { 'filename': meta['filename'], 'waveform': meta['waveform'], 'target': meta['target'] }

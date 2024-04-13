@@ -27,10 +27,11 @@ if __name__ == "__main__":
         print("Usage: python FineTuneGTZAN.py <path_to_GTZAN_dataset> <path_to_pretrained_model>")
         sys.exit(1)
 
-
+    print("Loading model...")
     model = ResNet38_Transfer(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num)
     model.load_from_pretrain(sys.argv[2])
 
+    print("Loading dataset...")
     datasetPath = sys.argv[1]
     data = []
     count = 1
@@ -44,4 +45,5 @@ if __name__ == "__main__":
                     count += 1
 
     dataset = GTZANDataset(data)
+    print("Fine-tuning model...")
     train(model, dataset)

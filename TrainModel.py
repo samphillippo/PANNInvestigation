@@ -20,12 +20,23 @@ class Mixup(object):
         return np.array(mixup_lambdas)
 
 
-num_workers = 8 #follows format from given code. Change?
+num_workers = 1 #follows format from given code. Change?
 device = 'cuda' if (torch.cuda.is_available()) else 'cpu'
 learning_rate=1e-4
 stop_iteration = 10000
 holdout_fold = 1
 batch_size = 32
+
+def move_data_to_device(x):
+    if 'float' in str(x.dtype):
+        x = torch.Tensor(x)
+    elif 'int' in str(x.dtype):
+        x = torch.LongTensor(x)
+    else:
+        return x
+
+    return x.to(device)
+
 
 def train(model, dataset):
     if device == 'cuda':
@@ -41,7 +52,7 @@ def train(model, dataset):
         batch_size=batch_size * 2) #for mixup
 
     validate_sampler = EvaluateSampler(
-        hdf5_path=dataset.data,
+        data=dataset.data,
         holdout_fold=holdout_fold,
         batch_size=batch_size)
 
@@ -55,18 +66,6 @@ def train(model, dataset):
 
     #ISSUE: do we need to store test data???
     #They just use validate!!! (i guess this is ok cause we're technically tuning?)
-
-
-    #COLLATE_FN
-    """Collate data.
-    Args:
-      list_data_dict, e.g., [{'audio_name': str, 'waveform': (clip_samples,), ...},
-                             {'audio_name': str, 'waveform': (clip_samples,), ...},
-                             ...]
-    Returns:
-      np_data_dict, dict, e.g.,
-          {'audio_name': (batch_size,), 'waveform': (batch_size, clip_samples), ...}
-    """
 
     ########################################################################
 
@@ -109,7 +108,7 @@ def train(model, dataset):
 
         # Move data to GPU
         for key in batch_data_dict.keys():
-            batch_data_dict[key] = batch_data_dict[key].to(device)
+            batch_data_dict[key] = move_data_to_device(batch_data_dict[key])
 
         # Train
         model.train()
@@ -152,7 +151,7 @@ def evaluate(model, data_loader):
     # Forward data to a model in mini-batches
     for n, batch_data_dict in enumerate(data_loader):
         # print(n)
-        batch_waveform = batch_data_dict['waveform'].to(device)
+        batch_waveform = move_data_to_device(batch_data_dict['waveform'])
 
         with torch.no_grad():
             model.eval()

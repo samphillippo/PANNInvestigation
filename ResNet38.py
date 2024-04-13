@@ -184,7 +184,6 @@ class ResNet38(nn.Module):
     def forward(self, input, mixup_lambda=None):
         """
         Input: (batch_size, data_length)"""
-
         x = self.spectrogram_extractor(input)   # (batch_size, 1, time_steps, freq_bins)
         x = self.logmel_extractor(x)    # (batch_size, 1, time_steps, mel_bins)
 
@@ -200,12 +199,12 @@ class ResNet38(nn.Module):
         if self.training and mixup_lambda is not None:
             x = self.do_mixup(x, mixup_lambda)
 
-        x = self.conv_block1(x, pool_size=(2, 2), pool_type='avg')
+        x = self.conv_block1(x, pool_size=(2, 2))
         x = F.dropout(x, p=0.2, training=self.training, inplace=True)
         x = self.resnet(x)
         x = F.avg_pool2d(x, kernel_size=(2, 2))
         x = F.dropout(x, p=0.2, training=self.training, inplace=True)
-        x = self.conv_block_after1(x, pool_size=(1, 1), pool_type='avg')
+        x = self.conv_block_after1(x, pool_size=(1, 1))
         x = F.dropout(x, p=0.2, training=self.training, inplace=True)
         x = torch.mean(x, dim=3)
 
