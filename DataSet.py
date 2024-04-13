@@ -1,6 +1,8 @@
 
 #TODO: sampler???
 
+
+
 class GTZANDataset(object):
     def __init__(self, data):
         self.data = data
