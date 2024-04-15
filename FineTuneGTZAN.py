@@ -6,6 +6,7 @@ from ResNet38 import ResNet38_Transfer
 from DataSet import GTZANDataset
 from TrainModel import train
 
+
 sample_rate = 32000
 clip_duration = 30
 max_len = sample_rate * clip_duration
