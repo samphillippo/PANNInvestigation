@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 #base class to store data for sampling
 class Base(object):
@@ -84,12 +85,24 @@ class EvaluateSampler(object):
             yield batch_meta
 
 #combines a list of dictionaries into a single dictionary
+# def collate_fn(list_data_dict):
+#     np_data_dict = {}
+
+#     for key in list_data_dict[0].keys():
+#         np_data_dict[key] = np.array([data_dict[key] for data_dict in list_data_dict])
+
+#     return np_data_dict
+
 def collate_fn(list_data_dict):
     np_data_dict = {}
-
     for key in list_data_dict[0].keys():
-        np_data_dict[key] = np.array([data_dict[key] for data_dict in list_data_dict])
-
+        items = [data_dict[key] for data_dict in list_data_dict]
+        if isinstance(items[0], torch.Tensor):
+            # Convert tensors to numpy arrays explicitly if they are tensors.
+            np_data_dict[key] = np.stack(items)
+        else:
+            # Use dtype=object for non-uniform sequences
+            np_data_dict[key] = np.array(items, dtype=object)
     return np_data_dict
 
 

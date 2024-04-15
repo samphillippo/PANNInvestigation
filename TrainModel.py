@@ -1,14 +1,21 @@
+import math
 import torch
 import numpy as np
 import os
 from time import time
 from DataSet import TrainSampler, EvaluateSampler, collate_fn
+from tqdm import tqdm
 
 #Mixup class, implements mixup augmentation by generating random coefficients of size batch_size
 class Mixup(object):
     def __init__(self, mixup_alpha, random_seed=1234):
         self.mixup_alpha = mixup_alpha
         self.random_state = np.random.RandomState(random_seed)
+
+    # def get_lambda(self, batch_size):
+    #     lam = self.random_state.beta(self.mixup_alpha, self.mixup_alpha, batch_size)
+    #     return np.stack((lam, 1 - lam), axis=1).flatten()
+
 
     # returns a list of random coefficients of size batch_size
     def get_lambda(self, batch_size):
@@ -27,7 +34,7 @@ num_workers = 8 if (torch.cuda.is_available()) else 1
 learning_rate=1e-4
 stop_iteration = 10000
 holdout_fold = 1
-batch_size = 32
+batch_size = 16
 
 #Moves data to device, if it is a float tensor (ignores string numpy arrays)
 def move_data_to_device(x):
@@ -76,12 +83,18 @@ def train(model, dataset, workspace, task):
 
     #TODO: IMPORTANT: SAVING
 
+    # print(len(train_loader))
+    total_training_samples = len(train_sampler.indexes)
+    batch = train_sampler.batch_size
+    number_of_batches = math.ceil(total_training_samples / batch)
+    print("Total training samples: {}, batch size: {}, number of batches: {}".format(total_training_samples, batch_size, number_of_batches))
+
     # Train on mini batches
     iteration = 0
     train_bgn_time = time()
-    for batch_data_dict in train_loader:
+    for batch_data_dict in tqdm(train_loader):
         #print validation accuracy every 200 iterations
-        if iteration % 200 == 0 and iteration > 0:
+        if iteration % 20 == 0 and iteration > 0:
             print('------------------------------------')
             print('Iteration: {}'.format(iteration))
 
@@ -103,7 +116,7 @@ def train(model, dataset, workspace, task):
             train_bgn_time = time()
 
 
-        if iteration % 2000 == 0 and iteration > 0:
+        if iteration % 100 == 0 and iteration > 0:
             checkpoint = {
                 'iteration': iteration,
                 'model': model.module.state_dict() if device == 'cuda' else model.state_dict(),}
@@ -122,6 +135,9 @@ def train(model, dataset, workspace, task):
 
         # Train
         model.train()
+
+        # print(batch_data_dict['waveform'].shape)
+        # print(batch_data_dict['mixup_lambda'].shape)
 
         #RUNS MODEL WITH MIXUP
         batch_output_dict = model(batch_data_dict['waveform'],
