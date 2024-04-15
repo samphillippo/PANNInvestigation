@@ -44,26 +44,26 @@ def move_data_to_device(x):
         x = torch.Tensor(x).to(device)
     return x
 
-def compute_mAP(model, data_loader):
-    model.eval()
-    all_targets = []
-    all_predictions = []
-    with torch.no_grad():
-        for batch_data_dict in data_loader:
-            batch_waveform = move_data_to_device(batch_data_dict['waveform'])
-            batch_output = model(batch_waveform)
-            all_predictions.append(batch_output['clipwise_output'].data.cpu().numpy())
-            all_targets.append(batch_data_dict['target'])
+# def compute_mAP(model, data_loader):
+#     model.eval()
+#     all_targets = []
+#     all_predictions = []
+#     with torch.no_grad():
+#         for batch_data_dict in data_loader:
+#             batch_waveform = move_data_to_device(batch_data_dict['waveform'])
+#             batch_output = model(batch_waveform)
+#             all_predictions.append(batch_output['clipwise_output'].data.cpu().numpy())
+#             all_targets.append(batch_data_dict['target'])
 
-    all_predictions = np.vstack(all_predictions)
-    all_targets = np.vstack(all_targets)
+#     all_predictions = np.vstack(all_predictions)
+#     all_targets = np.vstack(all_targets)
 
-    average_precisions = []
-    for i in range(all_targets.shape[1]):
-        average_precisions.append(average_precision_score(all_targets[:, i], all_predictions[:, i]))
+#     average_precisions = []
+#     for i in range(all_targets.shape[1]):
+#         average_precisions.append(average_precision_score(all_targets[:, i], all_predictions[:, i]))
 
-    mAP = np.mean(average_precisions)
-    return mAP
+#     mAP = np.mean(average_precisions)
+#     return mAP
 
 
 #Trains the model on the dataset
@@ -148,6 +148,7 @@ def train(model, dataset, workspace, task):
 
 
             if (iteration % 100 == 0 and iteration > 0) or iteration == 1:
+                train_fin_time = time()
                 checkpoint = {
                     'iteration': iteration,
                     'model': model.module.state_dict() if device == 'cuda' else model.state_dict(),}
@@ -158,13 +159,13 @@ def train(model, dataset, workspace, task):
                 torch.save(checkpoint, checkpoint_path)
                 print('Model saved to {}'.format(checkpoint_path))
 
-                statistics = evaluate(model, validate_loader)
+                statistics, mAP = evaluate(model, validate_loader)
                 print('Validate accuracy: {:.3f}'.format(statistics['accuracy']))
 
                 accs.append(statistics['accuracy'])
 
                 print('Validating model...')
-                mAP = compute_mAP(model, validate_loader)
+                # mAP = compute_mAP(model, validate_loader)
                 print(f'Iteration: {iteration}, mAP: {mAP}')
 
                 # Append mAP to the list
@@ -173,6 +174,15 @@ def train(model, dataset, workspace, task):
                 # Write mAP to file
                 f.write(json.dumps({'iteration': iteration, 'mAP': mAP, 'accuracy': statistics['accuracy']}) + '\n')
                 f.flush()
+
+                train_time = train_fin_time - train_bgn_time
+                validate_time = time() - train_fin_time
+
+                print(
+                    'Train time: {:.3f} s, validate time: {:.3f} s'
+                    ''.format(train_time, validate_time))
+
+                train_bgn_time = time()
 
             batch_data_dict['mixup_lambda'] = mixup_augmenter.get_lambda(len(batch_data_dict['waveform']))
 
@@ -223,26 +233,41 @@ def append_to_dict(dict, key, value):
 #Evaluates the model on the dataset
 def evaluate(model, data_loader):
     output_dict = {}
+    all_targets = []
+    all_predictions = []
+    model.eval()
 
     # Forward data to a model in mini-batches
-    for n, batch_data_dict in enumerate(data_loader):
-        # print(n)
-        batch_waveform = move_data_to_device(batch_data_dict['waveform'])
+    with torch.no_grad():
+        for n, batch_data_dict in enumerate(data_loader):
+            # print(n)
+            batch_waveform = move_data_to_device(batch_data_dict['waveform'])
 
-        with torch.no_grad():
-            model.eval()
+        
+            
             batch_output = model(batch_waveform)
+            all_predictions.append(batch_output['clipwise_output'].data.cpu().numpy())
+            all_targets.append(batch_data_dict['target'])
 
-        append_to_dict(output_dict, 'filename', batch_data_dict['filename'])
+            append_to_dict(output_dict, 'filename', batch_data_dict['filename'])
 
-        append_to_dict(output_dict, 'clipwise_output',
-            batch_output['clipwise_output'].data.cpu().numpy())
+            append_to_dict(output_dict, 'clipwise_output',
+                batch_output['clipwise_output'].data.cpu().numpy())
 
-        # if return_input:
-        #     append_to_dict(output_dict, 'waveform', batch_data_dict['waveform'])
+            # if return_input:
+            #     append_to_dict(output_dict, 'waveform', batch_data_dict['waveform'])
 
-        if 'target' in batch_data_dict.keys():
-            append_to_dict(output_dict, 'target', batch_data_dict['target'])
+            if 'target' in batch_data_dict.keys():
+                append_to_dict(output_dict, 'target', batch_data_dict['target'])
+    
+    all_predictions = np.vstack(all_predictions)
+    all_targets = np.vstack(all_targets)
+    
+    average_precisions = []
+    for i in range(all_targets.shape[1]):
+        average_precisions.append(average_precision_score(all_targets[:, i], all_predictions[:, i]))
+
+    mAP = np.mean(average_precisions)
 
     for key in output_dict.keys():
         output_dict[key] = np.concatenate(output_dict[key], axis=0)
@@ -259,4 +284,4 @@ def evaluate(model, data_loader):
 
     statistics = {'accuracy': accuracy}
 
-    return statistics
+    return statistics, mAP
