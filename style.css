@@ -99,3 +99,38 @@ p {
   margin: auto auto;
   display: block;
 }
+
+.paper-block {
+  /* margin: 0 auto; */
+  /* max-width: 800px; */
+  padding: 1rem;
+  padding-bottom: 0;
+  margin-bottom: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-child {
+  flex: 1;
+  margin: 4rem;
+  padding: 3rem;
+}
+
+.profile-picture {
+  width: 200px;
+  height: 200px;
+  border-radius: 25%;
+  margin: 0 auto;
+  display: block;
+  border: 3px solid #ccc;
+}
+
+/* .flex-child:first-child {
+  margin-right: 20px;
+} */

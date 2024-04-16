@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Your Project Name</title>
-    <meta property="og:title" content=Your Project Name" />
-    <meta name="twitter:title" content="Your Project Name" />
+    <title>PANN ResNet Exploration For DS 4440</title>
+    <meta property="og:title" content="PANN ResNet Exploration For DS 4440" />
+    <meta name="twitter:title" content="PANN ResNet Exploration For DS 4440" />
     <meta
       name="description"
       content="Your project about your cool topic described right here."
@@ -90,256 +90,270 @@
             Literature Review; Biography; Social Impact; Industry Applications;
             Follow-on Research; and Peer-Review
           </h2> -->
-          <h3>INTRO:</h3>
-          <p>
-            In Qiuqiang et al's recent research into Pretrained Audio Neural
-            Networks (PANNs) <a href="#qiuqiang-2020">[1]</a>, the authors
-            highlight a novel approach to the problem of audio labeling. Prior
-            to this paper, state-of-the-art approaches to audio labeling tasks
-            have been models specifically trained for that task on data specific
-            to the task. The authors of this paper prove that it is instead more
-            effective to train a larger model on a much wider range of audio
-            clips <a href="#gemmeke-2017">[2]</a>, before fine-tuning to a
-            specific task.
-          </p>
-          <p>
-            The work done by this paper is incredible, and its CONCEPT has since
-            revolutionized not just audio labeling, but the field of deep
-            learning. The specific model the researchers fine-tuning for their
-            testing however holds potential for improvement. All of the
-            hyperparameter tuning and testing done in this paper utilized a
-            specific CNN architecture they titled CNN14. Upon reading their
-            results section though, we found that their best-case CNN14 was
-            actually outperformed by a Residual Network called ResNet38, which
-            did so without any hyperparameter tuning.
-          </p>
-          <p>
-            Our project investigated the viability of this alternate
-            architecture by testing it on one of the fine-tuning tasks tested on
-            CNN14 in the paper. To do this, we imported their pre-trained
-            ResNet38 model, and constructed a fine-tuning algorithm to train it
-            on the GTZAN song genre labeling task <a href="#cook-2002">[3]</a>.
-          </p>
+          <div class="paper-block">
+            <h3>INTRO:</h3>
+            <p>
+              In Qiuqiang et al's recent research into Pretrained Audio Neural
+              Networks (PANNs) <a href="#qiuqiang-2020">[1]</a>, the authors
+              highlight a novel approach to the problem of audio labeling. Prior
+              to this paper, state-of-the-art approaches to audio labeling tasks
+              have been models specifically trained for that task on data
+              specific to the task. The authors of this paper prove that it is
+              instead more effective to train a larger model on a much wider
+              range of audio clips <a href="#gemmeke-2017">[2]</a>, before
+              fine-tuning to a specific task.
+            </p>
+            <p>
+              The work done by this paper is incredible, and its CONCEPT has
+              since revolutionized not just audio labeling, but the field of
+              deep learning. The specific model the researchers fine-tuning for
+              their testing however holds potential for improvement. All of the
+              hyperparameter tuning and testing done in this paper utilized a
+              specific CNN architecture they titled CNN14. Upon reading their
+              results section though, we found that their best-case CNN14 was
+              actually outperformed by a Residual Network called ResNet38, which
+              did so without any hyperparameter tuning.
+            </p>
+            <p>
+              Our project investigated the viability of this alternate
+              architecture by testing it on one of the fine-tuning tasks tested
+              on CNN14 in the paper. To do this, we imported their pre-trained
+              ResNet38 model, and constructed a fine-tuning algorithm to train
+              it on the GTZAN song genre labeling task
+              <a href="#cook-2002">[3]</a>.
+            </p>
+          </div>
 
-          <h3>REVIEW:</h3>
-          <p>
-            Qiuqiang et al's work in this paper is very detailed; providing not
-            only exact architectural details on all models used, but thorough
-            investigations into all hyperparameters. The paper generally follows
-            the format of describing a potential technique and testing how it
-            performs when applied on the AudioSet dataset
-            <a href="#gemmeke-2017">[2]</a>. Their work is incredibly
-            comprehensive, testing many of the cutting-edge deep-learning
-            techniques on top of designing their own. They also include a final
-            section on how their best CNN14 model performs when fine-tuned for a
-            few specific tasks.
-          </p>
-          <p>
-            Throughout the paper, models' accuracies are measured through a
-            score called mean average precision (mAP). According to the
-            research, the best mAP a CNN14 could achieve on the AudioSet
-            training task was 0.431. This score was raised to 0.439 through a
-            novel technique called "wavegram-logmel," but this technique is
-            later disregarded for fine-tuning tasks. In the Results section, the
-            paper highlights an alternative 38-layer residual network structure
-            that achieves an mAP of 0.434, beating out the CNN14. Our research
-            has been into investigating the potential of this alternative ResNet
-            structure, and comparing its performance against the proposed CNN14
-            on a fine-tuning task. Specifically, we're exploring fine-tuning on
-            the GTZAN music genre classification dataset
-            <a href="#cook-2002">[3]</a>, on which the CNN14 achieved a
-            near-state-of-the-art accuracy of 91.5%.
-          </p>
+          <div class="paper-block">
+            <h3>REVIEW:</h3>
+            <p>
+              Qiuqiang et al's work in this paper is very detailed; providing
+              not only exact architectural details on all models used, but
+              thorough investigations into all hyperparameters. The paper
+              generally follows the format of describing a potential technique
+              and testing how it performs when applied on the AudioSet dataset
+              <a href="#gemmeke-2017">[2]</a>. Their work is incredibly
+              comprehensive, testing many of the cutting-edge deep-learning
+              techniques on top of designing their own. They also include a
+              final section on how their best CNN14 model performs when
+              fine-tuned for a few specific tasks.
+            </p>
+            <p>
+              Throughout the paper, models' accuracies are measured through a
+              score called mean average precision (mAP). According to the
+              research, the best mAP a CNN14 could achieve on the AudioSet
+              training task was 0.431. This score was raised to 0.439 through a
+              novel technique called "wavegram-logmel," but this technique is
+              later disregarded for fine-tuning tasks. In the Results section,
+              the paper highlights an alternative 38-layer residual network
+              structure that achieves an mAP of 0.434, beating out the CNN14.
+              Our research has been into investigating the potential of this
+              alternative ResNet structure, and comparing its performance
+              against the proposed CNN14 on a fine-tuning task. Specifically,
+              we're exploring fine-tuning on the GTZAN music genre
+              classification dataset
+              <a href="#cook-2002">[3]</a>, on which the CNN14 achieved a
+              near-state-of-the-art accuracy of 91.5%.
+            </p>
+          </div>
+          <div class="paper-block">
+            <h3>TECHNICAL DETAILS:</h3>
+            <p>
+              Code:
+              <a href="https://github.com/joshiarnav/ds4440final"
+                >https://github.com/joshiarnav/ds4440final</a
+              >
+            </p>
+            <p>
+              In order to test how the pretrained 3-layer residual network may
+              perform on the GTZAN dataset, it was necessary to implement our
+              own fine-tuning pipeline. Thanks to the exhaustive work by the
+              paper's authors, this was made simple, thanks to their clear
+              architecture layouts, and available source code. In order to keep
+              our results consistent with those reached by Qiuqiang et al, we
+              tried to keep our training methodology aligned with theirs
+              (including hyperparameters, loss function, etc.).
+            </p>
+            <p>
+              Our first task was to retrieve the fine-tuning dataset, and parse
+              it into model-readable features. We were able to download the 1000
+              GTZAN samples through
+              <a href="https://huggingface.co/datasets/marsyas/gtzan"
+                >HuggingFace</a
+              >, as .wav files labeled by genre. We were then able to use
+              Python's
+              <a href="https://librosa.org/doc/latest/index.html">librosa</a>
+              library to load each file into memory as a numpy array. Finally,
+              we padded/truncated each array file to be a consistent 30 seconds,
+              and normalized each item to a value [0-1]. After converting each
+              genre label to a one-hot vector, and labeling one tenth of the
+              samples as "validation", our data is ready to be processed.
+            </p>
+            <img class="center" src="architecture.png" />
+            <p class="center">
+              <em>Figure 1: Architecture of the ResNet38 model</em>
+            </p>
 
-          <h3>TECH DETAILS:</h3>
-          <p>
-            Code:
-            <a href="https://github.com/joshiarnav/ds4440final"
-              >https://github.com/joshiarnav/ds4440final</a
-            >
-          </p>
-          <p>
-            In order to test how the pretrained 3-layer residual network may
-            perform on the GTZAN dataset, it was necessary to implement our own
-            fine-tuning pipeline. Thanks to the exhaustive work by the paper's
-            authors, this was made simple, thanks to their clear architecture
-            layouts, and available source code. In order to keep our results
-            consistent with those reached by Qiuqiang et al, we tried to keep
-            our training methodology aligned with theirs (including
-            hyperparameters, loss function, etc.).
-          </p>
-          <p>
-            Our first task was to retrieve the fine-tuning dataset, and parse it
-            into model-readable features. We were able to download the 1000
-            GTZAN samples through
-            <a href="https://huggingface.co/datasets/marsyas/gtzan"
-              >HuggingFace</a
-            >, as .wav files labeled by genre. We were then able to use Python's
-            <a href="https://librosa.org/doc/latest/index.html">librosa</a>
-            library to load each file into memory as a numpy array. Finally, we
-            padded/truncated each array file to be a consistent 30 seconds, and
-            normalized each item to a value [0-1]. After converting each genre
-            label to a one-hot vector, and labeling one tenth of the samples as
-            "validation", our data is ready to be processed.
-          </p>
-          <img class="center" src="architecture.png" />
-          <p class="center">
-            <em>Figure 1: Architecture of the ResNet38 model</em>
-          </p>
-
-          <p>
-            Our model architecture follows exactly that which is laid out for
-            ResNet38 in the paper. In total, it consists of five sub-classes,
-            which implement one another and combine to create a final
-            "ResNet38_Transfer" class used for fine-tuning. Maybe the most
-            unique class is "ResNet38" which includes our logmel spectrogram
-            extractor and augmentor, and our mixup implementation. When an input
-            is passed to a "ResNet38," it is first run through our spectrogram
-            extractor and our logmel extractor, both imported from
-            <a href="https://github.com/qiuqiangkong/torchlibrosa">pylibrosa</a>
-            (a repo by Qiuqiang!). After a BatchNorm is applied, we then perform
-            spectrogram augmentation, again imported from pylibrosa. We then run
-            a final data augmentation using audio mixup augmentation, before
-            passing the results from this into the structure highlighted above.
-          </p>
-          <p>
-            Our "ResNet38_Transfer" class is our outermost class of our network,
-            and what we use to transfer the pretrained "ResNet38" to the GTZAN
-            task. Its structure consists of a ResNet38 block, followed
-            immediately by a fully-connected transfer layer, mapping the 2048
-            classes ResNet38 is trained on to the 10 GTZAN genres. This class
-            also includes a function to load in our previously downloaded
-            pre-trained model into the ResNet38 base layer using pytorch's
-            built-in "load_state_dict" function.
-          </p>
-          <p>
-            In order to fine-tune the above model to a novel task, we
-            implemented a training function that takes in the parsed dataset and
-            pretrained model. We utilize pytorch's "DataLoader" class alongside
-            custom batch samplers and collate functions in order to generate
-            random batches of training and validation data. We use the ADAM
-            optimizer with a learning rate of 0.0001 and no weight decay, and
-            Binary Cross-Entropy as our loss function. As our system trains, we
-            use pytorch's built-in "save" function to save checkpoints of our
-            model's state dictionary for later testing.
-          </p>
-
-          <h3>FINDINGS:</h3>
-          <p>
-            Utilizing a similar training strategy to that utilized within the
-            paper, we imported the ResNet38 PANN in order to determine whether
-            it could adapt to downstream tasks in the manner mentioned in the
-            paper. The ResNet38 was trained using 10-fold cross validation
-            alongside data augmentation. By training on this task, the
-            fine-tuned model was able to achieve 92% accuracy after 760
-            iterations in categorizing audio by music genre despite not being
-            originally trained on this task. This accuracy is a higher
-            performance than what was found in the paper for the CNN14, which
-            was 91.5%.
-          </p>
-          <p>
-            The 92% accuracy was achieved utilizing a batch size of 16 and a
-            single holdout set (10% of the total data) after 760 iterations. The
-            accuracy of the model plateaued around this point and stabilized in
-            the high 80% range (generally between 86 and 89% accuracy). The
-            fine-tuning thus demonstrates diminishing returns especially after
-            1000 iterations at this training speed and these hyperparameters.
-            Additionally, due to the small dataset (only 1000 samples), the
-            holdout set accuracy can fluctuate dramatically depending on luck,
-            even if the data is augmented well prior to training.
-          </p>
-          <img class="center" src="accuracy.png" />
-          <p class="center">
-            <em
-              >Figure 2: Abridged accuracy of the model over time (highest
-              accuracy highlighted)</em
-            >
-          </p>
-          <br />
-          <img class="center" src="total_accuracy.png" />
-          <p class="center">
-            <em
-              >Figure 3: Full training accuracy of the model (missing middle
-              data)</em
-            >
-          </p>
-          <p>
-            The mAP (mean average precision) scores as mentioned in the paper
-            were also recorded for the model training, although the paper does
-            not mention these statistics specifically for the GTZAN dataset when
-            training with the CNN14. Therefore, these measures stand as a
-            potential marker for future studies or for comparison with other
-            models.
-          </p>
-          <img class="center" src="mAP.png" />
-          <p class="center">
-            <em>Figure 4: mAP values during training</em>
-          </p>
-          <p>
-            Due to the limitations of our hardware, even fine-tuning the model
-            required a significant amount of time. The paper utilized an Nvidia
-            Tesla V100 to train while we were using an RTX 2060, causing
-            training to take upwards of multiple days to train until the
-            original paper's end goal, or about a day to reach what we believe
-            to be a good local minimum (no major changes in loss for several
-            hundred iterations). Additionally, in the paper, they only trained a
-            CNN14 on this dataset. Utilizing the Tesla V100, they were able to
-            reach convergence within an hour, displaying both the training speed
-            and accuracy of the CNN14. Extrapolating this to the difference
-            between hardware, a CNN14 would likely be able to converge much
-            faster on our hardware as well. This is likely why the original
-            paper chose to explore the CNN14 over the ResNet38, but we are
-            unsure why they did not continue the exploration as ResNet38 seems
-            to be able to outperform the CNN given enough time and the correct
-            circumstances.
-          </p>
-
-          <h3>CONCLUSION:</h3>
-          <p>
-            This study demonstrates the efficacy of ResNet38, a pre-trained deep
-            learning model, in audio pattern recognition tasks, specifically in
-            music genre classification using the GTZAN dataset. Our experimental
-            results show that the ResNet38 model not only achieved superior
-            accuracy compared to the previously benchmarked CNN14 but also
-            highlighted the potential for broader application of deep learning
-            models pre-trained on extensive datasets like AudioSet. This
-            investigation underscores the importance of selecting the right
-            model architecture and training strategy, even in the presence of
-            hardware limitations.
-          </p>
-          <p>
-            Despite the extended training times due to less capable hardware,
-            the fine-tuned ResNet38 model reached a notable accuracy of 92%,
-            suggesting that advanced models might offer significant improvements
-            in performance if computational resources permit. These findings
-            have practical implications for developing more robust and accurate
-            audio recognition systems, which could enhance applications in
-            digital music services, content management systems, and automated
-            monitoring environments.
-          </p>
-          <p>
-            For future work, it would be valuable to explore further the
-            trade-offs between model complexity and computational efficiency.
-            Additionally, expanding the application of such models to other
-            audio recognition tasks could reveal insights into the
-            generalizability and adaptability of pretrained networks.
-          </p>
-          <p>
-            Continued research in this direction could pave the way for
-            advancements in audio analysis technologies, contributing positively
-            to both commercial and academic fields. Due to the application of
-            fine-tuned neural networks in tasks requiring high performance, the
-            insights provided by this analysis may be helpful in selecting
-            architecture carefully in order to trade computational efficiency
-            for performance.
-          </p>
-          <p>
-            Ultimately, this analysis demonstrates that there are further
-            performance gains that can be found in fine-tuning large neural
-            network models for downstream tasks, and these performance gains
-            will be ever important in the current neural network industry
-            landscape.
-          </p>
+            <p>
+              Our model architecture follows exactly that which is laid out for
+              ResNet38 in the paper. In total, it consists of five sub-classes,
+              which implement one another and combine to create a final
+              "ResNet38_Transfer" class used for fine-tuning. Maybe the most
+              unique class is "ResNet38" which includes our logmel spectrogram
+              extractor and augmentor, and our mixup implementation. When an
+              input is passed to a "ResNet38," it is first run through our
+              spectrogram extractor and our logmel extractor, both imported from
+              <a href="https://github.com/qiuqiangkong/torchlibrosa"
+                >pylibrosa</a
+              >
+              (a repo by Qiuqiang!). After a BatchNorm is applied, we then
+              perform spectrogram augmentation, again imported from pylibrosa.
+              We then run a final data augmentation using audio mixup
+              augmentation, before passing the results from this into the
+              structure highlighted above.
+            </p>
+            <p>
+              Our "ResNet38_Transfer" class is our outermost class of our
+              network, and what we use to transfer the pretrained "ResNet38" to
+              the GTZAN task. Its structure consists of a ResNet38 block,
+              followed immediately by a fully-connected transfer layer, mapping
+              the 2048 classes ResNet38 is trained on to the 10 GTZAN genres.
+              This class also includes a function to load in our previously
+              downloaded pre-trained model into the ResNet38 base layer using
+              pytorch's built-in "load_state_dict" function.
+            </p>
+            <p>
+              In order to fine-tune the above model to a novel task, we
+              implemented a training function that takes in the parsed dataset
+              and pretrained model. We utilize pytorch's "DataLoader" class
+              alongside custom batch samplers and collate functions in order to
+              generate random batches of training and validation data. We use
+              the ADAM optimizer with a learning rate of 0.0001 and no weight
+              decay, and Binary Cross-Entropy as our loss function. As our
+              system trains, we use pytorch's built-in "save" function to save
+              checkpoints of our model's state dictionary for later testing.
+            </p>
+          </div>
+          <div class="paper-block">
+            <h3>FINDINGS:</h3>
+            <p>
+              Utilizing a similar training strategy to that utilized within the
+              paper, we imported the ResNet38 PANN in order to determine whether
+              it could adapt to downstream tasks in the manner mentioned in the
+              paper. The ResNet38 was trained using 10-fold cross validation
+              alongside data augmentation. By training on this task, the
+              fine-tuned model was able to achieve 92% accuracy after 760
+              iterations in categorizing audio by music genre despite not being
+              originally trained on this task. This accuracy is a higher
+              performance than what was found in the paper for the CNN14, which
+              was 91.5%.
+            </p>
+            <p>
+              The 92% accuracy was achieved utilizing a batch size of 16 and a
+              single holdout set (10% of the total data) after 760 iterations.
+              The accuracy of the model plateaued around this point and
+              stabilized in the high 80% range (generally between 86 and 89%
+              accuracy). The fine-tuning thus demonstrates diminishing returns
+              especially after 1000 iterations at this training speed and these
+              hyperparameters. Additionally, due to the small dataset (only 1000
+              samples), the holdout set accuracy can fluctuate dramatically
+              depending on luck, even if the data is augmented well prior to
+              training.
+            </p>
+            <img class="center" src="accuracy.png" />
+            <p class="center">
+              <em
+                >Figure 2: Abridged accuracy of the model over time (highest
+                accuracy highlighted)</em
+              >
+            </p>
+            <br />
+            <img class="center" src="total_accuracy.png" />
+            <p class="center">
+              <em
+                >Figure 3: Full training accuracy of the model (missing middle
+                data)</em
+              >
+            </p>
+            <p>
+              The mAP (mean average precision) scores as mentioned in the paper
+              were also recorded for the model training, although the paper does
+              not mention these statistics specifically for the GTZAN dataset
+              when training with the CNN14. Therefore, these measures stand as a
+              potential marker for future studies or for comparison with other
+              models.
+            </p>
+            <img class="center" src="mAP.png" />
+            <p class="center">
+              <em>Figure 4: mAP values during training</em>
+            </p>
+            <p>
+              Due to the limitations of our hardware, even fine-tuning the model
+              required a significant amount of time. The paper utilized an
+              Nvidia Tesla V100 to train while we were using an RTX 2060,
+              causing training to take upwards of multiple days to train until
+              the original paper's end goal, or about a day to reach what we
+              believe to be a good local minimum (no major changes in loss for
+              several hundred iterations). Additionally, in the paper, they only
+              trained a CNN14 on this dataset. Utilizing the Tesla V100, they
+              were able to reach convergence within an hour, displaying both the
+              training speed and accuracy of the CNN14. Extrapolating this to
+              the difference between hardware, a CNN14 would likely be able to
+              converge much faster on our hardware as well. This is likely why
+              the original paper chose to explore the CNN14 over the ResNet38,
+              but we are unsure why they did not continue the exploration as
+              ResNet38 seems to be able to outperform the CNN given enough time
+              and the correct circumstances.
+            </p>
+          </div>
+          <div class="paper-block">
+            <h3>CONCLUSION:</h3>
+            <p>
+              This study demonstrates the efficacy of ResNet38, a pre-trained
+              deep learning model, in audio pattern recognition tasks,
+              specifically in music genre classification using the GTZAN
+              dataset. Our experimental results show that the ResNet38 model not
+              only achieved superior accuracy compared to the previously
+              benchmarked CNN14 but also highlighted the potential for broader
+              application of deep learning models pre-trained on extensive
+              datasets like AudioSet. This investigation underscores the
+              importance of selecting the right model architecture and training
+              strategy, even in the presence of hardware limitations.
+            </p>
+            <p>
+              Despite the extended training times due to less capable hardware,
+              the fine-tuned ResNet38 model reached a notable accuracy of 92%,
+              suggesting that advanced models might offer significant
+              improvements in performance if computational resources permit.
+              These findings have practical implications for developing more
+              robust and accurate audio recognition systems, which could enhance
+              applications in digital music services, content management
+              systems, and automated monitoring environments.
+            </p>
+            <p>
+              For future work, it would be valuable to explore further the
+              trade-offs between model complexity and computational efficiency.
+              Additionally, expanding the application of such models to other
+              audio recognition tasks could reveal insights into the
+              generalizability and adaptability of pretrained networks.
+            </p>
+            <p>
+              Continued research in this direction could pave the way for
+              advancements in audio analysis technologies, contributing
+              positively to both commercial and academic fields. Due to the
+              application of fine-tuned neural networks in tasks requiring high
+              performance, the insights provided by this analysis may be helpful
+              in selecting architecture carefully in order to trade
+              computational efficiency for performance.
+            </p>
+            <p>
+              Ultimately, this analysis demonstrates that there are further
+              performance gains that can be found in fine-tuning large neural
+              network models for downstream tasks, and these performance gains
+              will be ever important in the current neural network industry
+              landscape.
+            </p>
+          </div>
 
           <!-- <p>
             Just as we have done in the role-playing exercise, analyze the paper
@@ -385,9 +399,34 @@
           </p>
 
           <h2>Team Members</h2>
+          <div class="flex-container">
+            <div class="flex-child paper-block">
+              <div class="center">
+                <img class="profile-picture" src="Arnav_Picture.png" />
+                <br />
+                <a href="mailto:joshi.arn@northeastern.edu">Arnav Joshi</a>
+                <br />
+                <a href="https://github.com/joshiarnav">Github</a> |
+                <a href="https://www.linkedin.com/in/arnav--joshi/">LinkedIn</a>
+                | <a href="https://arnav.dev">Website</a>
+              </div>
+            </div>
 
-          <p><a href="mailto:joshi.arn@northeastern.edu">Arnav Joshi</a></p>
-          <p><a href="mailto:phillippo.s@northeastern.edu">Sam Phillippo</a></p>
+            <div class="flex-child paper-block">
+              <div class="center">
+                <img class="profile-picture" src="Sam_Picture.jpeg" />
+                <br />
+                <a href="mailto:phillippo.s@northeastern.edu">Sam Phillippo</a>
+                <br />
+                <a href="https://github.com/samphillippo">Github</a> |
+                <a href="https://www.linkedin.com/in/sam-phillippo/"
+                  >LinkedIn</a
+                >
+              </div>
+            </div>
+          </div>
+          <!-- <p><a href="mailto:joshi.arn@northeastern.edu">Arnav Joshi</a></p>
+          <p><a href="mailto:phillippo.s@northeastern.edu">Sam Phillippo</a></p> -->
         </div>
         <!--col-->
       </div>
