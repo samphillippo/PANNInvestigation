@@ -1,0 +1,12 @@
+[
+  { "iteration": 1, "mAP": 0.14794304164217836, "accuracy": 0.07 },
+  { "iteration": 100, "mAP": 0.7204821455883575, "accuracy": 0.69 },
+  { "iteration": 200, "mAP": 0.862796676207332, "accuracy": 0.74 },
+  { "iteration": 300, "mAP": 0.8872222944006832, "accuracy": 0.81 },
+  { "iteration": 400, "mAP": 0.9162101232101231, "accuracy": 0.86 },
+  { "iteration": 500, "mAP": 0.9283327462011671, "accuracy": 0.85 },
+  { "iteration": 600, "mAP": 0.94227641130799, "accuracy": 0.88 },
+  { "iteration": 700, "mAP": 0.9457907713201831, "accuracy": 0.88 },
+  { "iteration": 800, "mAP": 0.9498151015651015, "accuracy": 0.89 },
+  { "iteration": 900, "mAP": 0.9567665112665111, "accuracy": 0.9 }
+]
