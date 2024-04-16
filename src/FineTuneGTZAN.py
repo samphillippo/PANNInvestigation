@@ -3,6 +3,7 @@ import os
 
 from FeatureExtractor import get_features_from_wav, get_label_vector
 from ResNet38 import ResNet38_Transfer
+from CNN14 import Transfer_Cnn14
 from DataSet import GTZANDataset
 from TrainModel import train
 
@@ -20,15 +21,22 @@ genre_to_index_map = { "blues": 0, "classical": 1, "country": 2, "disco": 3, "hi
 
 # Fine-tune the model on the GTZAN dataset
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print("Usage: python FineTuneGTZAN.py <workspace_path> <GTZAN_dataset_name> <pretrained_model_name>")
         sys.exit(1)
 
     workspace = sys.argv[1]
 
     print("Loading model...")
-    model = ResNet38_Transfer(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num)
-    model.load_from_pretrain(os.path.join(workspace, sys.argv[3]))
+    modelName = sys.argv[3]
+    if "ResNet38" in modelName:
+        model = ResNet38_Transfer(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num)
+    elif "Cnn14" in modelName:
+        model = Transfer_Cnn14(sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num, False)
+    else:
+        print("Invalid model type")
+        sys.exit(1)
+    model.load_from_pretrain(os.path.join(workspace, modelName))
 
     print("Loading dataset...")
     datasetPath = os.path.join(workspace, sys.argv[2])
