@@ -118,7 +118,7 @@ def train(model, dataset, workspace, task):
     # Train on mini batches
     iteration = 0
     train_bgn_time = time()
-    with open(os.path.join(workspace, 'map_values.json'), 'w') as f:
+    with open(os.path.join(workspace, 'results/map_values.json'), 'w') as f:
         for batch_data_dict in tqdm(train_loader):
             #print validation accuracy every 200 iterations
             if iteration % 20 == 0 and iteration > 0 and iteration % 100 != 0:
@@ -170,7 +170,7 @@ def train(model, dataset, workspace, task):
 
                 # Append mAP to the list
                 map_values.append({'iteration': iteration, 'mAP': mAP, 'accuracy': statistics['accuracy']})
-                
+
                 # Write mAP to file
                 f.write(json.dumps({'iteration': iteration, 'mAP': mAP, 'accuracy': statistics['accuracy']}) + '\n')
                 f.flush()
@@ -243,8 +243,8 @@ def evaluate(model, data_loader):
             # print(n)
             batch_waveform = move_data_to_device(batch_data_dict['waveform'])
 
-        
-            
+
+
             batch_output = model(batch_waveform)
             all_predictions.append(batch_output['clipwise_output'].data.cpu().numpy())
             all_targets.append(batch_data_dict['target'])
@@ -259,10 +259,10 @@ def evaluate(model, data_loader):
 
             if 'target' in batch_data_dict.keys():
                 append_to_dict(output_dict, 'target', batch_data_dict['target'])
-    
+
     all_predictions = np.vstack(all_predictions)
     all_targets = np.vstack(all_targets)
-    
+
     average_precisions = []
     for i in range(all_targets.shape[1]):
         average_precisions.append(average_precision_score(all_targets[:, i], all_predictions[:, i]))
