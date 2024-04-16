@@ -184,9 +184,6 @@ class ResNet38(nn.Module):
 
         if self.training:
             x = self.spec_augmenter(x)
-
-        # Mixup on spectrogram
-        if self.training and mixup_lambda is not None:
             x = self.do_mixup(x, mixup_lambda)
 
         x = self.conv_block1(x, pool_size=(2, 2))
