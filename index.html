@@ -57,8 +57,8 @@
       <div class="row">
         <div class="col justify-content-center text-center">
           <h2>
-            An Analysis of “PANNs: Large-Scale Pretrained Audio Neural Networks
-            for Audio Pattern Recognition”
+            An Analysis of "PANNs: Large-Scale Pretrained Audio Neural Networks
+            for Audio Pattern Recognition"
           </h2>
           <p>By Sam Phillippo and Arnav Joshi</p>
           <p>
@@ -92,7 +92,7 @@
           </h2> -->
           <h3>INTRO:</h3>
           <p>
-            In Qiuqiang et al’s recent research into Pretrained Audio Neural
+            In Qiuqiang et al's recent research into Pretrained Audio Neural
             Networks (PANNs) <a href="#qiuqiang-2020">[1]</a>, the authors
             highlight a novel approach to the problem of audio labeling. Prior
             to this paper, state-of-the-art approaches to audio labeling tasks
@@ -123,7 +123,7 @@
 
           <h3>REVIEW:</h3>
           <p>
-            Qiuqiang et al’s work in this paper is very detailed; providing not
+            Qiuqiang et al's work in this paper is very detailed; providing not
             only exact architectural details on all models used, but thorough
             investigations into all hyperparameters. The paper generally follows
             the format of describing a potential technique and testing how it
@@ -139,7 +139,7 @@
             score called mean average precision (mAP). According to the
             research, the best mAP a CNN14 could achieve on the AudioSet
             training task was 0.431. This score was raised to 0.439 through a
-            novel technique called “wavegram-logmel,” but this technique is
+            novel technique called "wavegram-logmel," but this technique is
             later disregarded for fine-tuning tasks. In the Results section, the
             paper highlights an alternative 38-layer residual network structure
             that achieves an mAP of 0.434, beating out the CNN14. Our research
@@ -161,7 +161,7 @@
           <p>
             In order to test how the pretrained 3-layer residual network may
             perform on the GTZAN dataset, it was necessary to implement our own
-            fine-tuning pipeline. Thanks to the exhaustive work by the paper’s
+            fine-tuning pipeline. Thanks to the exhaustive work by the paper's
             authors, this was made simple, thanks to their clear architecture
             layouts, and available source code. In order to keep our results
             consistent with those reached by Qiuqiang et al, we tried to keep
@@ -180,7 +180,7 @@
             padded/truncated each array file to be a consistent 30 seconds, and
             normalized each item to a value [0-1]. After converting each genre
             label to a one-hot vector, and labeling one tenth of the samples as
-            “validation”, our data is ready to be processed.
+            "validation", our data is ready to be processed.
           </p>
           <img class="center" src="architecture.png" />
           <p class="center">
@@ -191,10 +191,10 @@
             Our model architecture follows exactly that which is laid out for
             ResNet38 in the paper. In total, it consists of five sub-classes,
             which implement one another and combine to create a final
-            “ResNet38_Transfer” class used for fine-tuning. Maybe the most
-            unique class is “ResNet38” which includes our logmel spectrogram
+            "ResNet38_Transfer" class used for fine-tuning. Maybe the most
+            unique class is "ResNet38" which includes our logmel spectrogram
             extractor and augmentor, and our mixup implementation. When an input
-            is passed to a “ResNet38,” it is first run through our spectrogram
+            is passed to a "ResNet38," it is first run through our spectrogram
             extractor and our logmel extractor, both imported from
             <a href="https://github.com/qiuqiangkong/torchlibrosa">pylibrosa</a>
             (a repo by Qiuqiang!). After a BatchNorm is applied, we then perform
@@ -203,24 +203,24 @@
             passing the results from this into the structure highlighted above.
           </p>
           <p>
-            Our “ResNet38_Transfer” class is our outermost class of our network,
-            and what we use to transfer the pretrained “ResNet38” to the GTZAN
+            Our "ResNet38_Transfer" class is our outermost class of our network,
+            and what we use to transfer the pretrained "ResNet38" to the GTZAN
             task. Its structure consists of a ResNet38 block, followed
             immediately by a fully-connected transfer layer, mapping the 2048
             classes ResNet38 is trained on to the 10 GTZAN genres. This class
             also includes a function to load in our previously downloaded
             pre-trained model into the ResNet38 base layer using pytorch's
-            built-in “load_state_dict” function.
+            built-in "load_state_dict" function.
           </p>
           <p>
             In order to fine-tune the above model to a novel task, we
             implemented a training function that takes in the parsed dataset and
-            pretrained model. We utilize pytorch's “DataLoader” class alongside
+            pretrained model. We utilize pytorch's "DataLoader" class alongside
             custom batch samplers and collate functions in order to generate
             random batches of training and validation data. We use the ADAM
             optimizer with a learning rate of 0.0001 and no weight decay, and
             Binary Cross-Entropy as our loss function. As our system trains, we
-            use pytorch's built-in “save” function to save checkpoints of our
+            use pytorch's built-in "save" function to save checkpoints of our
             model's state dictionary for later testing.
           </p>
 
