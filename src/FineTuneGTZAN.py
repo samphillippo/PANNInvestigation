@@ -5,6 +5,7 @@ from FeatureExtractor import load_gtzan_dataset
 from ResNet38 import ResNet38_Transfer
 from CNN14 import Transfer_Cnn14
 from TrainModel import train
+from DataSet import GTZANDataset
 
 sample_rate = 32000
 clip_duration = 30
@@ -37,6 +38,6 @@ if __name__ == "__main__":
 
     print("Loading dataset...")
     datasetPath = os.path.join(workspace, sys.argv[2])
-    dataset = load_gtzan_dataset(datasetPath, sample_rate, max_len)
+    dataset = GTZANDataset(load_gtzan_dataset(datasetPath, sample_rate, max_len))
     print("Fine-tuning model...")
     train(model, dataset, workspace, "GTZAN")

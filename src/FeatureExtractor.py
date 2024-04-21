@@ -3,8 +3,6 @@ import numpy as np
 import torch
 import os
 
-from DataSet import GTZANDataset
-
 # Extracts features from a wav file
 def get_features_from_wav(file_path, sample_rate=32000, max_len=960000):
     audio, fs = librosa.core.load(file_path, sr=sample_rate, mono=True)
@@ -44,4 +42,4 @@ def load_gtzan_dataset(filepath, sample_rate, max_len):
                     #print(data[-1]["waveform"].shape)
                     count += 1
 
-    return GTZANDataset(data)
+    return data
