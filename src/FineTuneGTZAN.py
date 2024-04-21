@@ -6,8 +6,6 @@ from ResNet38 import ResNet38_Transfer
 from CNN14 import Transfer_Cnn14
 from TrainModel import train
 
-
-
 sample_rate = 32000
 clip_duration = 30
 max_len = sample_rate * clip_duration
