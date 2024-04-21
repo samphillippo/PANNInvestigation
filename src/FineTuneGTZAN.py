@@ -1,11 +1,11 @@
 import sys
 import os
 
-from FeatureExtractor import get_features_from_wav, get_label_vector
+from FeatureExtractor import load_gtzan_dataset
 from ResNet38 import ResNet38_Transfer
 from CNN14 import Transfer_Cnn14
-from DataSet import GTZANDataset
 from TrainModel import train
+
 
 
 sample_rate = 32000
@@ -17,7 +17,6 @@ mel_bins=64
 fmin=50
 fmax=14000
 classes_num = 10
-genre_to_index_map = { "blues": 0, "classical": 1, "country": 2, "disco": 3, "hiphop": 4, "jazz": 5, "metal": 6, "pop": 7, "reggae": 8, "rock": 9 }
 
 # Fine-tune the model on the GTZAN dataset
 if __name__ == "__main__":
@@ -40,20 +39,6 @@ if __name__ == "__main__":
 
     print("Loading dataset...")
     datasetPath = os.path.join(workspace, sys.argv[2])
-    data = []
-    count = 1
-    for genre_folder in os.listdir(datasetPath):
-        genre_path = os.path.join(datasetPath, genre_folder)
-        if os.path.isdir(genre_path):
-            for filename in os.listdir(genre_path):
-                if filename.endswith(".wav"):
-                    file_path = os.path.join(genre_path, filename)
-                    #waveform = get_features_from_wav(file_path, sample_rate, max_len).unsqueeze(0)
-                    waveform = get_features_from_wav(file_path, sample_rate, max_len)
-                    data.append({"filename": filename, "waveform": waveform, "target": get_label_vector(genre_folder, genre_to_index_map), "fold": count % 10})
-                    #print(data[-1]["waveform"].shape)
-                    count += 1
-
-    dataset = GTZANDataset(data)
+    dataset = load_gtzan_dataset(datasetPath, sample_rate, max_len)
     print("Fine-tuning model...")
     train(model, dataset, workspace, "GTZAN")
