@@ -22,6 +22,7 @@ classes_num = 10
 
 genre_to_index_map = { "blues": 0, "classical": 1, "country": 2, "disco": 3, "hiphop": 4, "jazz": 5, "metal": 6, "pop": 7, "reggae": 8, "rock": 9 }
 
+# Measure the confusion matrix for the given model and dataset
 def measure_confusion(model, dataset):
     device = 'cuda' if (torch.cuda.is_available()) else 'cpu'
     predicted = []
@@ -51,6 +52,7 @@ def measure_confusion(model, dataset):
 
     return confusion_matrix(np.array(actual), np.array(predicted))
 
+# Plot the confusion matrix
 def plot_confusion(conf_matrix, model_type):
     plt.figure(figsize=(8, 6))
     sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='g',

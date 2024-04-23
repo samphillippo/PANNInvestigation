@@ -4,6 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#this file is directly copied from Qiuqiang Kong's repository: https://github.com/qiuqiangkong/panns_transfer_to_gtzan/tree/master
+#minor modifications were made to the code to make it compatible with the current version of the repository
+
 def init_layer(layer):
     """Initialize a Linear or Convolutional layer. """
     nn.init.xavier_uniform_(layer.weight)

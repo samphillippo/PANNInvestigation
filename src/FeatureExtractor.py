@@ -27,6 +27,7 @@ def get_label_vector(genre_label):
     label_vector[genre_to_index_map[genre_label]] = 1
     return torch.Tensor(label_vector)
 
+# Loads the GTZAN dataset as a dictionary from the given filepath
 def load_gtzan_dataset(filepath, sample_rate, max_len):
     data = []
     count = 1
