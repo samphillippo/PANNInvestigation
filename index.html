@@ -237,7 +237,7 @@
           <div class="paper-block">
             <h3>FINDINGS:</h3>
             <p>
-              Utilizing a similar training strategy to that utilized within the
+              Utilizing a similar training strategy to that detailed within the
               paper, we imported the ResNet38 PANN in order to determine whether
               it could adapt to downstream tasks in the manner mentioned in the
               paper. The ResNet38 was trained using 10-fold cross validation
@@ -266,16 +266,14 @@
             <img class="center" src="media/accuracy.png" />
             <p class="center">
               <em
-                >Figure 2: Abridged accuracy of the model over time (highest
-                accuracy highlighted)</em
+                >Figure 2: Abridged accuracy of the model over time (first 1000 iterations)</em
               >
             </p>
             <br />
             <img class="center" src="media/total_accuracy.png" />
             <p class="center">
               <em
-                >Figure 3: Full training accuracy of the model (missing middle
-                data)</em
+                >Figure 3: Full training accuracy of the model (missing iterations 1000-1400)</em
               >
             </p>
             <p>
@@ -292,13 +290,17 @@
             </p>
             <p>
               The confusion matrices for both fine-tuned models were relatively
-              similar and displayed high accuracy for most genres. The confusion
-              matrix for the CNN14 model had some trouble identifying the "rock"
-              genre, while the ResNet38 model seemed to over predict this genre
-              slightly. Additionally, both models seemed to place extra songs
-              within the "pop" and "rock genres. These biases are likely due to
-              the small dataset size and the inherent difficulty in
-              distinguishing between similar genres.
+              similar and displayed high accuracy for most genres. It seems that
+              both models struggled particularly with the "rock" genre, with the
+              CNN14 model only making a correct prediction 4/10 times. While the
+              ResNet38 model performed better, at 7/10 times, this was still the
+              most difficult genre for the model to predict. Additionally, both
+              models seemed to place extra songs within the "pop" genre. These
+              biases are likely due to the small dataset size and the inherent
+              difficulty in distinguishing between similar genres. Overall,
+              according to our confusion matrices, it seems that the ResNet38
+              model was able to generally outperform the CNN14 model, but the
+              differences were not significant.
             </p>
             <img class="center" src="media/resnet_confusion.png" />
             <p class="center">
@@ -316,16 +318,13 @@
               causing training to take upwards of multiple days to train until
               the original paper's end goal, or about a day to reach what we
               believe to be a good local minimum (no major changes in loss for
-              several hundred iterations). Additionally, in the paper, they only
-              trained a CNN14 on this dataset. Utilizing the Tesla V100, they
+              several hundred iterations). Utilizing the Tesla V100, they
               were able to reach convergence within an hour, displaying both the
               training speed and accuracy of the CNN14. Extrapolating this to
               the difference between hardware, a CNN14 would likely be able to
-              converge much faster on our hardware as well. This is likely why
-              the original paper chose to explore the CNN14 over the ResNet38,
-              but we are unsure why they did not continue the exploration as
-              ResNet38 seems to be able to outperform the CNN given enough time
-              and the correct circumstances.
+              converge much faster on our hardware as well. This is likely a contributing
+              factor as to why the original paper chose to explore the CNN14 over the
+              ResNet38.
             </p>
           </div>
           <div class="paper-block">
@@ -335,7 +334,7 @@
               deep learning model, in audio pattern recognition tasks,
               specifically in music genre classification using the GTZAN
               dataset. Our experimental results show that the ResNet38 model not
-              only achieved superior accuracy compared to the previously
+              only achieved comparable accuracy to the previously
               benchmarked CNN14 but also highlighted the potential for broader
               application of deep learning models pre-trained on extensive
               datasets like AudioSet. This investigation underscores the
