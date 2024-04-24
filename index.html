@@ -246,7 +246,10 @@
               iterations in categorizing audio by music genre despite not being
               originally trained on this task. This accuracy is a higher
               performance than what was found in the paper for the CNN14, which
-              was 91.5%.
+              was 91.5%. While this this is a higher accuracy, it only lasts for
+              one of the iterations and the model generally stabilizes around
+              86-89% accuracy, which means it simply performs similarly to the
+              CNN14, not better.
             </p>
             <p>
               The 92% accuracy was achieved utilizing a batch size of 16 and a
@@ -286,6 +289,25 @@
             <img class="center" src="media/mAP.png" />
             <p class="center">
               <em>Figure 4: mAP values during training</em>
+            </p>
+            <p>
+              The confusion matrices for both fine-tuned models were relatively
+              similar and displayed high accuracy for most genres. The confusion
+              matrix for the CNN14 model had some trouble identifying the "rock"
+              genre, while the ResNet38 model seemed to over predict this genre
+              slightly. Additionally, both models seemed to place extra songs
+              within the "pop" and "rock genres. These biases are likely due to
+              the small dataset size and the inherent difficulty in
+              distinguishing between similar genres.
+            </p>
+            <img class="center" src="media/resnet_confusion.png" />
+            <p class="center">
+              <em>Figure 5: ResNet38 confusion matrix</em>
+            </p>
+            <br />
+            <img class="center" src="media/cnn_confusion.png" />
+            <p class="center">
+              <em>Figure 5: CNN14 confusion matrix</em>
             </p>
             <p>
               Due to the limitations of our hardware, even fine-tuning the model

@@ -225,7 +225,7 @@ class ResNet38_Transfer(nn.Module):
 
     def load_from_pretrain(self, pretrained_checkpoint_path):
         checkpoint = torch.load(pretrained_checkpoint_path, map_location=('cuda' if torch.cuda.is_available() else 'cpu'))
-        self.base.load_state_dict(checkpoint['model'])
+        self.load_state_dict(checkpoint['model'])
 
     def forward(self, input, mixup_lambda=None):
         """Input: (batch_size, data_length)
