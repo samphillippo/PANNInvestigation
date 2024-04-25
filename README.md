@@ -6,8 +6,8 @@ Our work investigates the potential benefits of using a Residual Neural Network 
 
 Setup:
 ```
-$ git clone https://github.com/joshiarnav/ds4440final.git
-$ cd ds4440final
+$ git clone https://github.com/samphillippo/PANNInvestigation.git
+$ cd PANNInvestigation
 $ pip install torch matplotlib librosa torchlibrosa
 ```
 
